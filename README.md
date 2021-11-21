@@ -1,4 +1,4 @@
-# Secret Santa client-server setup
+# Secret Santa client-server
 
 This is a very basic client-server setup that enables groups of friend to do a Secret Santa assignment over the internet.
 
