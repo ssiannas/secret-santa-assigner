@@ -1,4 +1,3 @@
-import threading
 import socket
 import random
 
@@ -41,7 +40,6 @@ class SantaServer:
 			except:
 				print("Something went wrong!")
 				break
-
 
 	def receive(self) -> None:
 		while True:
