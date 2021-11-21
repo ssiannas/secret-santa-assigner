@@ -1,6 +1,8 @@
 from src.client_handler import SantaClient
-import src.config as cfg
+from src.argparser import ClientParser
 
 if __name__ == "__main__":
-	client = SantaClient(cfg.ip, cfg.port)
+	parser = ClientParser()
+	host, port = parser.parse()
+	client = SantaClient(host, port)
 	client.receive()
