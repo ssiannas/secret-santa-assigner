@@ -3,11 +3,11 @@ import socket
 import random
 
 class SantaServer:
-	def __init__(self, ip, port) -> None:
+	def __init__(self, ip, port, participant_no) -> None:
 		self.ip = ip
 		self.port = port
 		self.__setup()
-		self.participant_number = 2
+		self.participant_number = participant_no
 		self.clients = []
 		self.names = []
 		
