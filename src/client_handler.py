@@ -15,9 +15,9 @@ class SantaClient:
 			print(f"\t{i+1}. {name}")
 		self.name = cfg.santas[int(input()) - 1]
 		print("Who are you the secret santa of?")
-		for i, name in enumerate(cfg.santees):
+		for i, name in enumerate(cfg.giftees):
 			print(f"\t{i+1}. {name}")
-		self.santee = cfg.santees[int(input()) - 1]
+		self.giftee = cfg.giftees[int(input()) - 1]
 
 	def __setup(self) -> None:
 		self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -30,7 +30,7 @@ class SantaClient:
 				if message == "NAME":
 					self.sock.send(self.name.encode('ascii'))
 				elif message == "SANTAOF":
-					self.sock.send(self.santee.encode('ascii'))
+					self.sock.send(self.giftee.encode('ascii'))
 				elif message == "END":
 					print("Finished! :D")
 					self.sock.close()

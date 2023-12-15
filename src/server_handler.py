@@ -8,7 +8,7 @@ class SantaServer:
 		self.port = port
 		self.__setup()
 		self.participant_number = participant_no
-		self.__santees = {}
+		self.__giftees = {}
 		self.__name_to_socket = {}
 
 	def __setup(self) -> None:
@@ -24,11 +24,11 @@ class SantaServer:
 
 	def __xmas_magic(self) -> None:
 		missing = None
-		for santee in self.__santees:
-			if santee == "None":
-				missing = self.__santees[santee]
+		for giftee in self.__giftees:
+			if giftee == "None":
+				missing = self.__giftees[giftee]
 
-		loner = list(filter(lambda x: x not in self.__santees.keys(), cfg.santas))[0]
+		loner = list(filter(lambda x: x not in self.__giftees.keys(), cfg.santas))[0]
 		try:
 			message = "You are the secret santa of: " + loner
 			self.__name_to_socket[missing].send(message.encode('ascii'))
@@ -45,7 +45,7 @@ class SantaServer:
 			client.send("SANTAOF".encode('ascii'))
 			santa_of = client.recv(1024).decode('ascii')
 
-			self.__santees[santa_of] = name
+			self.__giftees[santa_of] = name
 			self.__name_to_socket[name] = client
 			if len(self.__name_to_socket) == self.participant_number:
 				self.__xmas_magic()
