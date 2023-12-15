@@ -1,5 +1,6 @@
 import socket
 import random
+import src.config as cfg
 
 class SantaServer:
 	def __init__(self, ip, port, participant_no) -> None:
@@ -7,9 +8,9 @@ class SantaServer:
 		self.port = port
 		self.__setup()
 		self.participant_number = participant_no
-		self.clients = []
-		self.names = []
-		
+		self.__santees = {}
+		self.__name_to_socket = {}
+
 	def __setup(self) -> None:
 		# Setup an internet, streaming server and bind it to the port / ip
 		self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -17,29 +18,22 @@ class SantaServer:
 		self.sock.listen()
 		print(f"Server is listening on port {self.port} . . .")
 
-	def __check_list(self) -> bool:
-		for participant in self.participants:
-			p_index = self.participants.index(participant)
-			if (self.names[p_index] == participant):
-				return False
-		return True
-
 	def __send_termination_msg(self) -> None:
-		for client in self.clients:
-			client.send("END".encode('ascii'))
+		for client in self.__name_to_socket:
+			self.__name_to_socket[client].send("END".encode('ascii'))
 
 	def __xmas_magic(self) -> None:
-		self.participants = list(self.names)
-		while not self.__check_list():
-			random.shuffle(self.participants)
-		for client in self.clients:
-			c_index = self.clients.index(client)
-			try:
-				message = "You are the secret santa of: " + self.participants[c_index]
-				client.send(message.encode('ascii'))
-			except:
-				print("Something went wrong!")
-				break
+		missing = None
+		for santee in self.__santees:
+			if santee == "None":
+				missing = self.__santees[santee]
+
+		loner = list(filter(lambda x: x not in self.__santees.keys(), cfg.santas))[0]
+		try:
+			message = "You are the secret santa of: " + loner
+			self.__name_to_socket[missing].send(message.encode('ascii'))
+		except:
+			print("Something went wrong!")
 
 	def receive(self) -> None:
 		while True:
@@ -48,13 +42,13 @@ class SantaServer:
 
 			client.send("NAME".encode('ascii'))
 			name = client.recv(1024).decode('ascii')
-			self.names.append(name)
-			self.clients.append(client)
-			
-			if len(self.clients) == self.participant_number:
+			client.send("SANTAOF".encode('ascii'))
+			santa_of = client.recv(1024).decode('ascii')
+
+			self.__santees[santa_of] = name
+			self.__name_to_socket[name] = client
+			if len(self.__name_to_socket) == self.participant_number:
 				self.__xmas_magic()
 				self.__send_termination_msg()
 				self.sock.close()
 				break
-
-			
